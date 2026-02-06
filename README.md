@@ -1,22 +1,39 @@
 # 🚀 Minimal API - Gestão de Veículos e Autenticação
 
-Este projeto é uma **Minimal API** desenvolvida em **.NET 10 (LTS)** e **C# 14**, focada em alta performance e escalabilidade. O sistema gerencia uma frota de veículos com controle de acesso rigoroso via **JWT** e perfis diferenciados (**Adm/Editor**).
+Este projeto é uma **Minimal API** desenvolvida em **.NET 10 (LTS)** e **C# 14**, focada em alta performance e organização arquitetural. O sistema gerencia uma frota de veículos com autenticação e documentação moderna.
+
+## 🛠️ Tecnologias e Ferramentas
+
+* **Framework:** .NET 10 (LTS)
+* **Linguagem:** C# 14
+* **Banco de Dados:** MySQL 8.0
+* **ORM:** Entity Framework Core
+* **Documentação:** Microsoft.AspNetCore.OpenApi + Scalar API Reference (Como já tenho domínio do Swagger, resolvi explorar novas alterantivas)
 
 ## 📐 Arquitetura da Solução
 
-Utilizamos uma abordagem de **Clean Architecture** para separar as responsabilidades de negócio da persistência de dados no **MySQL 8.0**.
+O projeto utiliza **Clean Architecture**, separando as preocupações de infraestrutura da lógica de negócio central.
+
+### Estrutura de Pastas:
+* **Domain**: Contém as Entidades (`Vehicle`, `Administrator`), DTOs, Interfaces de Serviço e `ModelViews` (estruturas leves para respostas da API).
+* **Infrastructure**: Gerencia o contexto do banco de dados (`AppDbContext`) e a persistência.
+* **Services**: Implementação das regras de negócio para Veículos e Administradores.
 
 ```mermaid
 graph TD
-    User((Usuário)) -->|Login/Senha| API[Minimal API - Auth]
-    API -->|Valida| DB[(MySQL 8.0)]
-    API -->|Gera Token JWT| User
+    User -->|Request| Endpoints{Minimal API}
     
-    User -->|Token + Requests| Routes{Endpoints Veículos}
-    Routes -->|POST/PUT/DELETE| Admin[Regra: Administrador]
-    Routes -->|GET| Public[Lista Paginada]
-    
-    subgraph "Core Business"
-    Admin
-    Public
+    subgraph "Camada de Apresentação"
+        Endpoints -->|JSON| Scalar[Scalar API Documentation]
+        Endpoints -->|Response| ModelViews[ModelViews / Home Struct]
+    end
+
+    subgraph "Core: Domain"
+        Endpoints -->|DI| Services[Services: Vehicle/Admin]
+        Services -->|Contratos| Interfaces[Interfaces: IService]
+        Services -->|Data Objects| DTOs[LoginDTO / VehicleDTO]
+    end
+
+    subgraph "Infra: Data"
+        Services -->|EF Core| DB[(MySQL 8.0)]
     end
