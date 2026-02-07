@@ -7,6 +7,7 @@ using MinimalApi.Infrastructure.Db;
 using Scalar.AspNetCore;
 using MinimalApi.Domain.ModelViews;
 using MinimalApi.Domain.Entities;
+using MinimalApi.Domain.Enums;
 
 
 #region Builder
@@ -38,12 +39,89 @@ app.MapGet("/", () => Results.Ok(new Home())).WithTags("Home");
 
 
 #region Administrator
-app.MapPost("administrators/login", ([FromBody]LoginDTO loginDTO, IAdministratorServices administratorServices) =>
+app.MapPost("/administrators/login", ([FromBody] LoginDTO loginDTO, IAdministratorServices administratorServices) =>
 {
     if(administratorServices.Login(loginDTO) != null)
        return Results.Ok("Login com sucesso!");
     else
        return Results.Unauthorized();
+}).WithTags("Administrators");
+
+app.MapGet("/administrators", ([FromQuery] int? page, IAdministratorServices administratorServices) =>
+{
+   var adms = new List<AdministratorModelView>();
+
+   var administrators = administratorServices.All(page);
+
+   foreach(var adm in administrators)
+   {
+      adms.Add(new AdministratorModelView
+      {
+         Id = adm.Id,
+         Email = adm.Email,
+         Profile = adm.Profile
+      });
+   }
+
+   return Results.Ok(adms);
+}).WithTags("Administrators");
+
+app.MapGet("/administrators/{id}", ([FromRoute] int id, IAdministratorServices administratorServices) => {
+   var administrator = administratorServices.SearchById(id);
+
+   if(administrator == null) return Results.NotFound("This vehicle doesn't exist!");
+
+   return Results.Ok(new AdministratorModelView
+      {
+         Id = administrator.Id,
+         Email = administrator.Email,
+         Profile = administrator.Profile
+      });
+}).WithTags("Administrators");
+
+app.MapPost("administrators", ([FromBody] AdministratorDTO administratorDTO, IAdministratorServices administratorServices) =>
+{
+   var validation = new ValidationErrors
+   {
+      Messages = new List<string>()
+   };
+
+   if (string.IsNullOrEmpty(administratorDTO.Email))
+   {
+      validation.Messages.Add("The email cannot be empty");
+   }
+
+    if (string.IsNullOrEmpty(administratorDTO.Password))
+   {
+      validation.Messages.Add("The password cannot be empty");
+   }
+
+    if (administratorDTO.Profile == null)
+   {
+      validation.Messages.Add("The profile cannot be empty");
+   }
+
+   if (validation.Messages.Count > 0)
+   {
+      return Results.BadRequest(validation);
+   }
+
+   var administrator = new Administrator
+   {
+      Email = administratorDTO.Email,
+      Password = administratorDTO.Password,
+      Profile = administratorDTO.Profile.ToString() ?? Profile.Editor.ToString()
+   };
+
+   administratorServices.Add(administrator);
+
+   return Results.Created($"/administrator/{administrator.Id}", new AdministratorModelView
+      {
+         Id = administrator.Id,
+         Email = administrator.Email,
+         Profile = administrator.Profile
+      });
+
 }).WithTags("Administrators");
 #endregion
 
@@ -105,7 +183,7 @@ app.MapGet("/vehicles", ([FromQuery] int? page, IVehicleServices vehicleServices
 app.MapGet("/vehicles/{id}", ([FromRoute] int id, IVehicleServices vehicleServices) => {
    var vehicle = vehicleServices.SearchById(id);
 
-   if(vehicle == null) return Results.NotFound("This vehicle dosen't exist!");
+   if(vehicle == null) return Results.NotFound("This vehicle doesn't exist!");
 
    return Results.Ok(vehicle);
 
@@ -113,7 +191,7 @@ app.MapGet("/vehicles/{id}", ([FromRoute] int id, IVehicleServices vehicleServic
 
 app.MapPut("/vehicles/{id}", ([FromRoute] int id, VehicleDTO vehicleDTO, IVehicleServices vehicleServices) => {
    var vehicle = vehicleServices.SearchById(id);
-   if(vehicle == null) return Results.NotFound("This vehicle dosen't exist!");
+   if(vehicle == null) return Results.NotFound("This vehicle doesn't exist!");
    
    var validation = ValidDTO(vehicleDTO);
    if (validation.Messages.Count > 0)
@@ -134,7 +212,7 @@ app.MapPut("/vehicles/{id}", ([FromRoute] int id, VehicleDTO vehicleDTO, IVehicl
 app.MapDelete("/vehicles/{id}", ([FromRoute] int id, IVehicleServices vehicleServices) => {
    var vehicle = vehicleServices.SearchById(id);
 
-   if(vehicle == null) return Results.NotFound("This vehicle dosen't exist!");
+   if(vehicle == null) return Results.NotFound("This vehicle doesn't exist!");
 
    vehicleServices.DeleteByVehicle(vehicle);
 

@@ -13,10 +13,43 @@ namespace MinimalApi.Domain.Services
         {
          _contexto = context;
         }
-        public Administrator? Login(LoginDTO loginDTO)
+
+           public Administrator? SearchById(int id)
+        {
+            return _contexto.Administrators.Where(v => v.Id == id).FirstOrDefault();
+        }
+
+        public Administrator Add(Administrator administrator)
+        {
+            _contexto.Administrators.Add(administrator);
+            _contexto.SaveChanges();
+
+            return administrator;
+        }
+        public Administrator? Login(AdministratorDTO loginDTO)
         {
             var adm = _contexto.Administrators.Where(a => a.Email == loginDTO.Email && a.Password == loginDTO.Password).FirstOrDefault();
             return adm;
+        }
+
+        public List<Administrator> All(int? page)
+        {
+            var query = _contexto.Administrators.AsQueryable();
+          
+            int itemsPorPage = 10;
+
+            if (page != null)
+            {
+                query = query.Skip(((int)page - 1) * itemsPorPage).Take(itemsPorPage);
+            }
+            
+
+            return query.ToList();
+        }
+
+        public Administrator? Login(LoginDTO loginDTO)
+        {
+            throw new NotImplementedException();
         }
     }
 }
