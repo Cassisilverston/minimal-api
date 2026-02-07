@@ -1,37 +1,54 @@
 # 🚀 Minimal API - Gestão de Veículos e Autenticação
 
-Este projeto é uma **Minimal API** desenvolvida em **.NET 10 (LTS)** e **C# 14**, focada em alta performance e organização arquitetural. O sistema gerencia uma frota de veículos com autenticação e documentação moderna.
+> **Projeto de portfólio focado em arquitetura Back-End de alta performance, desenvolvido durante a formação .NET da DIO.**
+
+Este projeto implementa uma **Minimal API** utilizando **.NET 10 (LTS)** e **C# 14**. O foco central é demonstrar domínio em organização arquitetural, Clean Code e documentação moderna para sistemas de gestão de frotas.
 
 ## 🛠️ Tecnologias e Ferramentas
 
 * **Framework:** .NET 10 (LTS)
 * **Linguagem:** C# 14
-* **Banco de Dados:** MySQL 8.0
+* **Banco de Dados:** MySQL 8.0 (com suporte a Migrations)
 * **ORM:** Entity Framework Core
-* **Documentação:** Microsoft.AspNetCore.OpenApi + Scalar API Reference (Como já tenho domínio do Swagger, resolvi explorar novas alterantivas)
+* **Documentação:** Microsoft.AspNetCore.OpenApi + Scalar API Reference
+    * *Nota: Optei pelo Scalar por oferecer uma interface mais moderna e interativa que o Swagger convencional.*
+
+## 🔭 Evolução Técnica (Upgrade de Versão)
+
+Diferente da versão original proposta no curso (baseada em versões anteriores do .NET), este projeto foi **proativamente atualizado** por mim para as versões mais recentes:
+* **Upgrade:** De .NET 6/7/8 para **.NET 10 (LTS)**.
+* **Modernização:** Implementação de sintaxe e recursos do **C# 14**.
+* **Documentação:** Migração do Swagger para o **Scalar API Reference** para uma interface de teste superior.
+
+## 🌟 Funcionalidades Principais
+
+- [x] **Gestão de Veículos:** CRUD completo para controle de frota.
+- [x] **Autenticação de Administradores:** Sistema de login seguro.
+- [x] **Paginação de Dados:** Listagem otimizada de administradores para performance.
+- [x] **Validação de Inputs:** Camada de proteção com DTOs e mensagens de erro tratadas.
 
 ## 📐 Arquitetura da Solução
 
-O projeto utiliza **Clean Architecture**, separando as preocupações de infraestrutura da lógica de negócio central.
+O projeto utiliza **Clean Architecture**, garantindo que as regras de negócio sejam independentes de frameworks e ferramentas externas.
 
 ### Estrutura de Pastas:
-* **Domain**: Contém as Entidades (`Vehicle`, `Administrator`), DTOs, Interfaces de Serviço e `ModelViews` (estruturas leves para respostas da API).
-* **Infrastructure**: Gerencia o contexto do banco de dados (`AppDbContext`) e a persistência.
-* **Services**: Implementação das regras de negócio para Veículos e Administradores.
+* **`Domain`**: Entidades (`Vehicle`, `Administrator`), DTOs, Interfaces de Serviço e `ModelViews`.
+* **`Infrastructure`**: Contexto do banco de dados (`AppDbContext`) e persistência.
+* **`Services`**: Implementação das regras de negócio e casos de uso.
 
 ```mermaid
 graph TD
     User -->|Request| Endpoints{Minimal API}
     
-    subgraph "Camada de Apresentação"
-        Endpoints -->|JSON| Scalar[Scalar API Documentation]
-        Endpoints -->|Response| ModelViews[ModelViews / Home Struct]
+    subgraph "Apresentação"
+        Endpoints -->|JSON| Scalar[Scalar Documentation]
+        Endpoints -->|Response| ModelViews[ModelViews]
     end
 
     subgraph "Core: Domain"
         Endpoints -->|DI| Services[Services: Vehicle/Admin]
-        Services -->|Contratos| Interfaces[Interfaces: IService]
-        Services -->|Data Objects| DTOs[LoginDTO / VehicleDTO]
+        Services -->|Contratos| Interfaces[Interfaces]
+        Services -->|Objetos| DTOs[LoginDTO / VehicleDTO]
     end
 
     subgraph "Infra: Data"
