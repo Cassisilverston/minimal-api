@@ -49,8 +49,39 @@ app.MapPost("administrators/login", ([FromBody]LoginDTO loginDTO, IAdministrator
 
 
 #region Vehicles
+ValidationErrors ValidDTO(VehicleDTO vehicleDTO)
+{
+   var validation = new ValidationErrors
+   {
+      Messages = new List<string>()
+   };
+
+   if (string.IsNullOrEmpty(vehicleDTO.Name))
+   {
+      validation.Messages.Add("The name cannot be empty");
+   }
+
+   if (string.IsNullOrEmpty(vehicleDTO.Mark))
+   {
+      validation.Messages.Add("The mark cannot be empty");
+   }
+
+    if (vehicleDTO.Year < 1886)
+   {
+      validation.Messages.Add($"There is no car inferior to this one.The world's first car with an internal combustion engine, the Benz Patent-Motorwagen, was created by the German inventor Karl Benz in 1885 and patented on January 29, 1886.");
+   }
+   return validation;
+}
+
 app.MapPost("/vehicles", ([FromBody]VehicleDTO vehicleDTO, IVehicleServices vehicleServices) =>
 {
+   var validation = ValidDTO(vehicleDTO);
+   if (validation.Messages.Count > 0)
+   {
+      return Results.BadRequest(validation);
+   }
+
+
    var vehicle = new Vehicle
    {
       Name = vehicleDTO.Name,
@@ -58,7 +89,7 @@ app.MapPost("/vehicles", ([FromBody]VehicleDTO vehicleDTO, IVehicleServices vehi
       Year = vehicleDTO.Year
    };
 
-   vehicleServices.Inside(vehicle);
+   vehicleServices.Create(vehicle);
 
    return Results.Created($"/vehicle/{vehicle.Id}", vehicle);
 
@@ -74,7 +105,7 @@ app.MapGet("/vehicles", ([FromQuery] int? page, IVehicleServices vehicleServices
 app.MapGet("/vehicles/{id}", ([FromRoute] int id, IVehicleServices vehicleServices) => {
    var vehicle = vehicleServices.SearchById(id);
 
-   if(vehicle == null) return Results.NotFound("This Vehicle not exist!");
+   if(vehicle == null) return Results.NotFound("This vehicle dosen't exist!");
 
    return Results.Ok(vehicle);
 
@@ -82,14 +113,19 @@ app.MapGet("/vehicles/{id}", ([FromRoute] int id, IVehicleServices vehicleServic
 
 app.MapPut("/vehicles/{id}", ([FromRoute] int id, VehicleDTO vehicleDTO, IVehicleServices vehicleServices) => {
    var vehicle = vehicleServices.SearchById(id);
-
-   if(vehicle == null) return Results.NotFound("This Vehicle not exist!");
+   if(vehicle == null) return Results.NotFound("This vehicle dosen't exist!");
+   
+   var validation = ValidDTO(vehicleDTO);
+   if (validation.Messages.Count > 0)
+   {
+      return Results.BadRequest(validation);
+   }
 
    vehicle.Name = vehicleDTO.Name;
    vehicle.Mark = vehicleDTO.Mark;
    vehicle.Year = vehicleDTO.Year;
 
-   vehicleServices.ToUpdate(vehicle);
+   vehicleServices.Update(vehicle);
 
    return Results.Ok(vehicle);
 
@@ -98,7 +134,7 @@ app.MapPut("/vehicles/{id}", ([FromRoute] int id, VehicleDTO vehicleDTO, IVehicl
 app.MapDelete("/vehicles/{id}", ([FromRoute] int id, IVehicleServices vehicleServices) => {
    var vehicle = vehicleServices.SearchById(id);
 
-   if(vehicle == null) return Results.NotFound("This Vehicle not exist!");
+   if(vehicle == null) return Results.NotFound("This vehicle dosen't exist!");
 
    vehicleServices.DeleteByVehicle(vehicle);
 

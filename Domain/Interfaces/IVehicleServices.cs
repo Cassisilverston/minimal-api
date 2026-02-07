@@ -9,9 +9,9 @@ namespace MinimalApi.Domain.Interfaces
 
      Vehicle? SearchById(int id);
 
-     void Inside(Vehicle vehicle); 
+     void Create(Vehicle vehicle); 
 
-     void ToUpdate(Vehicle vehicle);
+     void Update(Vehicle vehicle);
 
      void DeleteByVehicle(Vehicle vehicle);
     }

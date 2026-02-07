@@ -40,7 +40,7 @@ namespace MinimalApi.Domain.Services
             _contexto.SaveChanges();
         }
 
-        public void Inside(Vehicle vehicle)
+        public void Create(Vehicle vehicle)
         {
             _contexto.Vehicles.Add(vehicle);
             _contexto.SaveChanges();
@@ -51,7 +51,7 @@ namespace MinimalApi.Domain.Services
             return _contexto.Vehicles.Where(v => v.Id == id).FirstOrDefault();
         }
 
-        public void ToUpdate(Vehicle vehicle)
+        public void Update(Vehicle vehicle)
         {
             _contexto.Vehicles.Update(vehicle);
             _contexto.SaveChanges();
