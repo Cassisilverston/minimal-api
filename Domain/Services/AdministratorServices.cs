@@ -49,7 +49,7 @@ namespace MinimalApi.Domain.Services
 
         public Administrator? Login(LoginDTO loginDTO)
         {
-            throw new NotImplementedException();
+            return _contexto.Administrators.FirstOrDefault(a => a.Email == loginDTO.Email && a.Password == loginDTO.Password);
         }
     }
 }
