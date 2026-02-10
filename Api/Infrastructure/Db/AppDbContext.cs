@@ -1,11 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using MinimalApi.Domain.Entities;
+using Microsoft.Extensions.Configuration;
 
 namespace MinimalApi.Infrastructure.Db
 {
     public class AppDbContext : DbContext
     {
-        private readonly IConfiguration _configurationAppSettings;
+        private readonly IConfiguration? _configurationAppSettings;
+
+         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+            
+        }
 
         public AppDbContext(IConfiguration configurationAppSettings)
         {
@@ -14,7 +20,7 @@ namespace MinimalApi.Infrastructure.Db
         public DbSet<Administrator> Administrators { get; set; } = default!;
 
         public DbSet<Vehicle> Vehicles { get; set; } = default!;
-        
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
