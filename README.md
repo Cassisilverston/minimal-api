@@ -1,8 +1,8 @@
-# 🚀 Minimal API - Gestão de Veículos e Autenticação
+# Minimal API - Gestão de Veículos e Autenticação
 
 > **Projeto de portfólio focado em arquitetura Back-End de alta performance, desenvolvido durante a formação .NET da DIO.**
 
-Este projeto implementa uma **Minimal API** utilizando **.NET 10 (LTS)** e **C# 14**. O foco central é demonstrar domínio em organização arquitetural, Clean Code, segurança e qualidade de software com testes de integração automatizados.
+Este projeto implementa uma **Minimal API** utilizando **.NET 10 (LTS)** e **C# 14**. O foco central é demonstrar domínio em organização arquitetural, Clean Code, segurança robusta e uma suíte de testes de integração profissional com uso de Mocks.
 
 ## 🛠️ Tecnologias e Ferramentas
 
@@ -23,16 +23,18 @@ Diferente da versão original proposta no curso, este projeto foi **proativament
 ## 🛡️ Segurança e Melhores Práticas (DevOps)
 
 Para garantir a integridade e segurança do projeto, apliquei padrões profissionais de desenvolvimento:
+* **Startup Refactoring:** Migração da lógica de inicialização para o padrão `Startup.cs`, centralizando a Injeção de Dependência (DI) e organização de middlewares.
 * **Secrets Management:** Implementação de **.NET User Secrets** para isolar credenciais sensíveis, garantindo que chaves de banco de dados nunca sejam expostas no GitHub.
 * **Injeção de Dependência:** Refatoração do `AppDbContext` para suporte a **Inversão de Controle (IoC)**, permitindo o isolamento total entre ambientes de desenvolvimento e teste.
 * **RBAC (Role-Based Access Control):** Controle de acesso granular diferenciando permissões entre perfis **ADM** e **Editor**.
 
 ## 🧪 Qualidade de Software (QA & Testes)
 
-O projeto conta com uma suíte de testes de integração robusta para validar as regras de negócio:
-* **Tecnologias:** MSTest e Entity Framework InMemory/Test Database.
-* **Cobertura:** Ciclo de vida completo do `AdministratorService` (Cadastro, Busca, Listagem e Autenticação).
-* **Concorrência:** Controle de paralelismo (`[DoNotParallelize]`) para garantir a integridade dos dados durante operações de limpeza de banco (`TRUNCATE`) entre execuções.
+O projeto conta com uma suíte de testes de integração robusta e blindada contra falhas de concorrência:
+* **Mocks e Isolamento:** Uso de `VehicleServiceMock` e `AdministratorServiceMock` para simular comportamentos do banco de dados e isolar unidades de teste.
+* **Cobertura Total:** Ciclo de vida completo (CRUD) dos serviços de **Administradores** e **Veículos** (Cadastro, Busca, Listagem, Atualização e Deleção).
+* **HttpClient Factory:** Implementação de `CreateClient()` individual no `Setup.cs` para garantir que cada teste possua sua própria instância, eliminando erros de concorrência HTTP.
+* **Concorrência:** Controle de paralelismo (`[DoNotParallelize]`) para garantir a integridade dos dados durante operações de limpeza de banco (`TRUNCATE`).
 
 ## 📐 Arquitetura da Solução
 
@@ -40,7 +42,7 @@ O projeto segue uma estrutura de **Solution-Based Architecture**, organizada par
 
 ### Estrutura de Pastas:
 * **`Api/`**: Código de produção (Endpoints, Domain, Services e Infrastructure).
-* **`Test/`**: Suíte de testes de integração e configurações de ambiente de QA.
+* **`Test/`**: Suíte de testes (Mocks, Helpers, Requests e Entities).
 
 ```mermaid
 graph TD
@@ -59,5 +61,5 @@ graph TD
 
     subgraph "Infra & QA"
         Services -->|EF Core| DB[(MySQL 8.0)]
-        TestProject[Test Project] -->|Integration| Services
+        TestProject[Test Project] -->|Integration/Mocks| Services
     end
