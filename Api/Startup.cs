@@ -92,12 +92,9 @@ public class Startup
 
         services.AddDbContext<AppDbContext>(options =>
         {
-            var connectionString = Configuration.GetConnectionString("MySql");
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
-            if (!string.IsNullOrEmpty(connectionString))
-            {
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-            }
+            options.UseNpgsql(connectionString);
         });
     }
 
@@ -122,13 +119,11 @@ public class Startup
             #endregion
 
             #region Administrator
-            // Login
             endpoints.MapPost("/administrators/login", ([FromBody] LoginDTO loginDTO, IAdministratorServices administratorServices) =>
             {
                 var adm = administratorServices.Login(loginDTO);
                 if (adm != null)
                 {
-                    // Chamamos o método privado criado lá embaixo
                     string token = GenerateTokenJwt(adm);
 
                     return Results.Ok(new AdministratorLogged
@@ -213,7 +208,6 @@ public class Startup
             // Create Vehicle
             endpoints.MapPost("/vehicles", ([FromBody] VehicleDTO vehicleDTO, IVehicleServices vehicleServices) =>
             {
-                // Chamamos o método privado de validação
                 var validation = ValidDTO(vehicleDTO);
                 if (validation.Messages.Count > 0) return Results.BadRequest(validation);
 
