@@ -27,7 +27,7 @@ namespace Test.Domain.Entities
             var connectionString = configuration.GetConnectionString("MySql");
 
             var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
             return new AppDbContext(options);
@@ -39,7 +39,6 @@ namespace Test.Domain.Entities
             // 1. Arrange (Preparar) 
             var context = CreateContextTest();
 
-            context.Database.ExecuteSqlRaw("TRUNCATE TABLE Administrators");
 
             var adm = new Administrator();
             adm.Email = "teste@teste.com";
@@ -60,7 +59,6 @@ namespace Test.Domain.Entities
         public void TestSearchById()
         {
             var context = CreateContextTest();
-            context.Database.ExecuteSqlRaw("TRUNCATE TABLE Administrators");
 
             var adm = new Administrator();
             adm.Email = "teste@teste.com";
@@ -86,7 +84,6 @@ namespace Test.Domain.Entities
         {
             // 1. Arrange
             var context = CreateContextTest();
-            context.Database.ExecuteSqlRaw("TRUNCATE TABLE Administrators");
 
             var adm = new Administrator();
             adm.Email = "teste@teste.com";
@@ -118,7 +115,6 @@ namespace Test.Domain.Entities
         {
             // 1. Arrange 
             var context = CreateContextTest();
-            context.Database.ExecuteSqlRaw("TRUNCATE TABLE Administrators");
 
             var adm = new Administrator();
             adm.Email = "teste@teste.com";
@@ -148,7 +144,6 @@ namespace Test.Domain.Entities
         {
             // 1. Arrange
             var context = CreateContextTest();
-            context.Database.ExecuteSqlRaw("TRUNCATE TABLE Administrators");
 
             // adicionei dois usuários para ter a tal da "certeza", pois estou aprendendo e fixando
             context.Administrators.Add(new Administrator { Email = "teste1@teste.com", Password = "1", Profile = "Adm" });

@@ -27,7 +27,7 @@ namespace Test.Domain.Entities
             var connectionString = configuration.GetConnectionString("MySql");
 
             var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
             return new AppDbContext(options);
@@ -37,7 +37,6 @@ namespace Test.Domain.Entities
         public void TestSaveVehicle()
         {
             var context = CreateContextTest();
-            context.Database.ExecuteSqlRaw("TRUNCATE TABLE Vehicles");
 
             var vehicle = new Vehicle();
             vehicle.Name = "Corolla";
@@ -56,7 +55,7 @@ namespace Test.Domain.Entities
         public void TestSearchById()
         {
             var context = CreateContextTest();
-            context.Database.ExecuteSqlRaw("TRUNCATE TABLE Vehicles");
+            
 
             var vehicle = new Vehicle();
             vehicle.Name = "Civic";
@@ -80,7 +79,6 @@ namespace Test.Domain.Entities
         public void TestAll()
         {
             var context = CreateContextTest();
-            context.Database.ExecuteSqlRaw("TRUNCATE TABLE Vehicles");
 
             context.Vehicles.Add(new Vehicle { Name = "Fusca", Mark = "VW", Year = 1970 });
             context.Vehicles.Add(new Vehicle { Name = "Uno", Mark = "Fiat", Year = 2000 });
