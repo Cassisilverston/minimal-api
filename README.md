@@ -9,7 +9,7 @@ Este projeto implementa uma **Minimal API** robusta para gestão de frotas, com 
 
 ## 📌 Objetivo do Projeto
 
-Construir uma solução escalável e segura, aplicando rigor técnico em:
+Projeto desenvolvido para demonstrar boas práticas no desenvolvimento de APIs com .NET, incluindo autenticação JWT, arquitetura em camadas, testes e persistência em banco de dados PostgreSQL.:
 - **Arquitetura em Camadas:** Separação clara de responsabilidades.
 - **Segurança Avançada:** Autenticação JWT e controle de permissões (RBAC).
 - **Qualidade de Software:** Testes de integração com isolamento por Mocks.
